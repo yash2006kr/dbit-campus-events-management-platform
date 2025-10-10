@@ -1,0 +1,76 @@
+/* Add this to the TOP of AddEventForm.css */
+
+.form-group {
+  margin-bottom: 1.25rem;
+  text-align: left;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+
+/* We don't need margin on the inputs themselves anymore */
+.add-event-form .form-group input,
+.add-event-form .form-group textarea {
+  margin-bottom: 0;
+}
+.add-event-form {
+  background: rgba(43, 43, 43, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 2rem;
+  margin-bottom: 3rem;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.add-event-form h3 {
+  margin-top: 0;
+  text-align: left;
+  font-size: 1.5rem;
+  color: #f0f0f0;
+}
+
+.add-event-form input,
+.add-event-form textarea {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  margin-bottom: 1rem;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 5px;
+  color: #f0f0f0;
+  font-size: 1rem;
+  box-sizing: border-box; /* Important for padding and width */
+}
+
+.add-event-form textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.add-event-form .form-row {
+  display: flex;
+  gap: 1rem;
+}
+
+.add-event-form button {
+  width: 100%;
+  padding: 1rem;
+  background-color: #a672ff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.add-event-form button:hover {
+  background-color: #8a4fff;
+}

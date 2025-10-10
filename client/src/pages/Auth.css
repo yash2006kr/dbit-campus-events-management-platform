@@ -1,0 +1,85 @@
+.auth-container {
+  max-width: 450px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: var(--color-surface);
+  border: 1px solid rgba(0, 70, 150, 0.3);
+  border-radius: 12px;
+  box-shadow: 0 0 15px var(--glow-color);
+  animation: glowing 2s infinite;
+}
+
+.auth-container h1 {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: var(--color-primary);
+  text-shadow: 0 0 10px var(--color-primary);
+}
+
+.auth-container form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.auth-container label {
+  font-weight: 600;
+  color: var(--color-accent);
+  text-shadow: 0 0 5px var(--color-primary);
+}
+
+.auth-container input {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--color-primary);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--color-text);
+  font-size: 1rem;
+  transition: box-shadow 0.3s ease;
+  box-shadow: 0 0 5px var(--color-primary);
+}
+
+.auth-container input:focus {
+  outline: none;
+  box-shadow: 0 0 15px var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+.auth-container button {
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-weight: 700;
+  font-size: 1.1rem;
+  cursor: pointer;
+  box-shadow: 0 0 10px var(--color-primary);
+  transition: box-shadow 0.3s ease, background 0.3s ease;
+}
+
+.auth-container button:hover {
+  background: var(--color-accent);
+  box-shadow: 0 0 20px var(--color-accent);
+}
+
+/* Dark blue neon glow colors */
+:root {
+  --color-primary: #1e3a8a; /* Dark blue */
+  --color-accent: #2563eb; /* Bright blue */
+  --color-surface: #0f172a; /* Very dark blue */
+  --color-text: #e0e7ff; /* Light blue text */
+  --glow-color: #2563eb; /* Neon blue glow */
+}
+
+@keyframes glowing {
+  0% {
+    box-shadow: 0 0 5px var(--glow-color);
+  }
+  50% {
+    box-shadow: 0 0 20px var(--glow-color);
+  }
+  100% {
+    box-shadow: 0 0 5px var(--glow-color);
+  }
+}

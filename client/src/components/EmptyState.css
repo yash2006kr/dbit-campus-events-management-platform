@@ -1,0 +1,17 @@
+/* EmptyState styles */
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--color-text-muted);
+  font-size: 1.2rem;
+  font-weight: 600;
+  text-shadow: 0 0 5px var(--color-primary);
+}
+
+.empty-state svg {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 1rem;
+  fill: var(--color-primary);
+  animation: glowing 2s infinite;
+}
