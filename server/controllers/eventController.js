@@ -1,7 +1,10 @@
 const asyncHandler = require('express-async-handler');
 const Event = require('../models/eventModel');
 const Feedback = require('../models/feedbackModel');
+const Notification = require('../models/notificationModel');
 const qrcode = require('qrcode');
+const icalGenerator = require('ical-generator');
+const ical = require('ical');
 
 // @desc    Get all events
 const getEvents = asyncHandler(async (req, res) => {
@@ -42,6 +45,18 @@ const updateEvent = asyncHandler(async (req, res) => {
   }
   const updatedEvent = await Event.findByIdAndUpdate(req.params.id, req.body, { new: true });
   res.status(200).json(updatedEvent);
+
+  // Emit notifications to RSVPd users for schedule change
+  const rsvpdUsers = updatedEvent.rsvps;
+  for (const userId of rsvpdUsers) {
+    const notification = await Notification.create({
+      userId,
+      eventId: req.params.id,
+      message: `Schedule changed for event: ${updatedEvent.name}`,
+      type: 'schedule_change',
+    });
+    global.io.to(userId.toString()).emit('notification', notification);
+  }
 });
 
 // @desc    Delete an event
@@ -79,6 +94,16 @@ const rsvpToEvent = asyncHandler(async (req, res) => {
 
   const updatedEvent = await event.save();
   res.status(200).json(updatedEvent);
+
+  // Emit notification to the user for RSVP update
+  const message = isRsvpd ? `You canceled RSVP for event: ${updatedEvent.name}` : `You RSVPd for event: ${updatedEvent.name}`;
+  const notification = await Notification.create({
+    userId,
+    eventId: req.params.id,
+    message,
+    type: 'rsvp_update',
+  });
+  global.io.to(userId.toString()).emit('notification', notification);
 });
 
 // @desc    Add or update feedback for an event
@@ -167,6 +192,61 @@ const checkinUser = asyncHandler(async (req, res) => {
   res.status(200).json({ message: 'Checked in successfully' });
 });
 
+// @desc    Export event to ICS calendar
+// @route   GET /api/events/:id/calendar/export
+// @access  Private
+const exportCalendar = asyncHandler(async (req, res) => {
+  const event = await Event.findById(req.params.id);
+  if (!event) {
+    res.status(404);
+    throw new Error('Event not found');
+  }
+
+  const cal = icalGenerator({ name: 'DBIT Campus Events' });
+  cal.createEvent({
+    start: event.date,
+    end: new Date(event.date.getTime() + 2 * 60 * 60 * 1000), // Assume 2 hours duration
+    summary: event.name,
+    description: event.description,
+    location: event.venue,
+    organizer: event.organizer,
+  });
+
+  res.setHeader('Content-Type', 'text/calendar');
+  res.setHeader('Content-Disposition', `attachment; filename="${event.name}.ics"`);
+  res.send(cal.toString());
+});
+
+// @desc    Import events from ICS calendar
+// @route   POST /api/events/calendar/import
+// @access  Private (Admin only)
+const importCalendar = asyncHandler(async (req, res) => {
+  const { icsData } = req.body;
+  if (!icsData) {
+    res.status(400);
+    throw new Error('ICS data is required');
+  }
+
+  const events = ical.parseICS(icsData);
+  const importedEvents = [];
+
+  for (const key in events) {
+    const ev = events[key];
+    if (ev.type === 'VEVENT') {
+      const newEvent = await Event.create({
+        name: ev.summary,
+        description: ev.description,
+        date: ev.start,
+        venue: ev.location,
+        organizer: ev.organizer || 'Imported',
+      });
+      importedEvents.push(newEvent);
+    }
+  }
+
+  res.status(201).json({ message: `${importedEvents.length} events imported`, events: importedEvents });
+});
+
 
 module.exports = {
   getEvents,
@@ -178,4 +258,6 @@ module.exports = {
   getFeedbackForEvent,
   generateCheckinQRCode,
   checkinUser,
+  exportCalendar,
+  importCalendar,
 };

@@ -10,6 +10,8 @@ const {
   getFeedbackForEvent,
   generateCheckinQRCode,
   checkinUser,
+  exportCalendar,
+  importCalendar,
 } = require('../controllers/eventController');
 const { protect, adminOnly } = require('../middleware/authMiddleware');
 
@@ -25,5 +27,9 @@ router.route('/:eventId/feedback').post(protect, addOrUpdateFeedback).get(getFee
 // QR Code routes
 router.route('/:id/qr').get(protect, adminOnly, generateCheckinQRCode);
 router.route('/:id/checkin').post(protect, checkinUser);
+
+// Calendar routes
+router.route('/:id/calendar/export').get(protect, exportCalendar);
+router.route('/calendar/import').post(protect, adminOnly, importCalendar);
 
 module.exports = router;

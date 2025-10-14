@@ -9,6 +9,8 @@ import EditEventModal from '../components/EditEventModal.jsx';
 import SearchBar from '../components/SearchBar.jsx';
 import Spinner from '../components/Spinner.jsx';
 import EmptyState from '../components/EmptyState.jsx';
+import CalendarExport from '../components/CalendarExport.jsx';
+import CalendarImport from '../components/CalendarImport.jsx';
 
 const HomePage = () => {
   const { user } = useAuth();
@@ -85,6 +87,7 @@ const HomePage = () => {
 
       <h1>Upcoming Campus Events</h1>
       <SearchBar onSearch={handleSearch} />
+      {user && user.role === 'admin' && <CalendarImport />}
       {isLoading ? ( <Spinner /> ) : (
         <>
           {events.length > 0 ? (
@@ -117,6 +120,7 @@ const HomePage = () => {
                           {isRsvpd ? 'Cancel RSVP' : 'RSVP Now'}
                         </button>
                       )}
+                      <CalendarExport eventId={event._id} />
                     </div>
                   </div>
                 );

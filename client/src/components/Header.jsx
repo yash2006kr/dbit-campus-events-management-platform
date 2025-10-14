@@ -1,6 +1,7 @@
 // in client/src/components/Header.jsx
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import NotificationBell from './NotificationBell';
 import './Header.css';
 
 const Header = () => {
@@ -22,6 +23,7 @@ const Header = () => {
           <>
             <Link to="/profile">Profile</Link>
             <span className="header-username">Welcome, {user.name.split(' ')[0]}!</span>
+            <NotificationBell />
             <button onClick={onLogout} className="btn-logout">Logout</button>
           </>
         ) : (
