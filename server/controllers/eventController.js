@@ -3,8 +3,7 @@ const Event = require('../models/eventModel');
 const Feedback = require('../models/feedbackModel');
 const Notification = require('../models/notificationModel');
 const qrcode = require('qrcode');
-const icalGenerator = require('ical-generator');
-const ical = require('ical');
+const ical = require('ical-generator');
 
 // @desc    Get all events
 const getEvents = asyncHandler(async (req, res) => {
@@ -83,20 +82,31 @@ const rsvpToEvent = asyncHandler(async (req, res) => {
 
   const userId = req.user.id;
   const isRsvpd = event.rsvps.includes(userId);
+  const isPending = event.pendingRsvps.includes(userId);
 
   if (isRsvpd) {
     // User wants to cancel RSVP, so pull the user ID from the array
     event.rsvps.pull(userId);
+  } else if (isPending) {
+    // User wants to cancel pending RSVP
+    event.pendingRsvps.pull(userId);
   } else {
-    // User wants to RSVP, so add the user ID to the array
-    event.rsvps.push(userId);
+    // User wants to RSVP, add to pending RSVPs for admin approval
+    event.pendingRsvps.push(userId);
   }
 
   const updatedEvent = await event.save();
   res.status(200).json(updatedEvent);
 
   // Emit notification to the user for RSVP update
-  const message = isRsvpd ? `You canceled RSVP for event: ${updatedEvent.name}` : `You RSVPd for event: ${updatedEvent.name}`;
+  let message;
+  if (isRsvpd) {
+    message = `You canceled RSVP for event: ${updatedEvent.name}`;
+  } else if (isPending) {
+    message = `You canceled your RSVP request for event: ${updatedEvent.name}`;
+  } else {
+    message = `Your RSVP request for event: ${updatedEvent.name} is pending admin approval`;
+  }
   const notification = await Notification.create({
     userId,
     eventId: req.params.id,
@@ -104,6 +114,21 @@ const rsvpToEvent = asyncHandler(async (req, res) => {
     type: 'rsvp_update',
   });
   global.io.to(userId.toString()).emit('notification', notification);
+
+  // Notify all admins about the new RSVP request
+  if (!isRsvpd && !isPending) {
+    const User = require('../models/userModel');
+    const admins = await User.find({ role: 'admin' });
+    for (const admin of admins) {
+      const adminNotification = await Notification.create({
+        userId: admin._id,
+        eventId: req.params.id,
+        message: `New RSVP request for event: ${updatedEvent.name} from ${req.user.name}`,
+        type: 'rsvp_request',
+      });
+      global.io.to(admin._id.toString()).emit('notification', adminNotification);
+    }
+  }
 });
 
 // @desc    Add or update feedback for an event
@@ -141,7 +166,7 @@ const getFeedbackForEvent = asyncHandler(async (req, res) => {
 
 // @desc    Generate QR code for check-in
 // @route   GET /api/events/:id/qr
-// @access  Private (Admin only)
+// @access  Private
 const generateCheckinQRCode = asyncHandler(async (req, res) => {
   const event = await Event.findById(req.params.id);
   if (!event) {
@@ -149,7 +174,15 @@ const generateCheckinQRCode = asyncHandler(async (req, res) => {
     throw new Error('Event not found');
   }
 
-  const qrData = JSON.stringify({ eventId: req.params.id, type: 'checkin' });
+  // Check if user is RSVPd to the event
+  const userId = req.user.id;
+  const isRsvpd = event.rsvps.includes(userId);
+  if (!isRsvpd) {
+    res.status(403);
+    throw new Error('You must be RSVPd to generate QR code');
+  }
+
+  const qrData = JSON.stringify({ eventId: req.params.id, userId, type: 'checkin' });
   const qrCode = await qrcode.toDataURL(qrData);
   res.status(200).json({ qrCode });
 });
@@ -202,7 +235,7 @@ const exportCalendar = asyncHandler(async (req, res) => {
     throw new Error('Event not found');
   }
 
-  const cal = icalGenerator({ name: 'DBIT Campus Events' });
+  const cal = ical({ name: 'DBIT Campus Events' });
   cal.createEvent({
     start: event.date,
     end: new Date(event.date.getTime() + 2 * 60 * 60 * 1000), // Assume 2 hours duration
@@ -248,12 +281,77 @@ const importCalendar = asyncHandler(async (req, res) => {
 });
 
 
+// @desc    Approve or reject RSVP
+// @route   POST /api/events/:id/rsvp/:userId/approve
+// @access  Private (Admin only)
+const approveOrRejectRSVP = asyncHandler(async (req, res) => {
+  const { action } = req.body; // 'approve' or 'reject'
+  const event = await Event.findById(req.params.id);
+  if (!event) {
+    res.status(404);
+    throw new Error('Event not found');
+  }
+
+  const userId = req.params.userId;
+  const isPending = event.pendingRsvps.includes(userId);
+
+  if (!isPending) {
+    res.status(400);
+    throw new Error('User has no pending RSVP for this event');
+  }
+
+  if (action === 'approve') {
+    event.pendingRsvps.pull(userId);
+    event.rsvps.push(userId);
+
+    // Notify user of approval
+    const notification = await Notification.create({
+      userId,
+      eventId: req.params.id,
+      message: `Your RSVP for event: ${event.name} has been approved!`,
+      type: 'rsvp_approved',
+    });
+    global.io.to(userId.toString()).emit('notification', notification);
+  } else if (action === 'reject') {
+    event.pendingRsvps.pull(userId);
+
+    // Notify user of rejection
+    const notification = await Notification.create({
+      userId,
+      eventId: req.params.id,
+      message: `Your RSVP for event: ${event.name} has been rejected.`,
+      type: 'rsvp_rejected',
+    });
+    global.io.to(userId.toString()).emit('notification', notification);
+  } else {
+    res.status(400);
+    throw new Error('Invalid action. Use "approve" or "reject"');
+  }
+
+  const updatedEvent = await event.save();
+  res.status(200).json(updatedEvent);
+});
+
+// @desc    Get pending RSVPs for an event
+// @route   GET /api/events/:id/pending-rsvps
+// @access  Private (Admin only)
+const getPendingRSVPs = asyncHandler(async (req, res) => {
+  const event = await Event.findById(req.params.id).populate('pendingRsvps', 'name email');
+  if (!event) {
+    res.status(404);
+    throw new Error('Event not found');
+  }
+  res.status(200).json(event.pendingRsvps);
+});
+
 module.exports = {
   getEvents,
   createEvent,
   updateEvent,
   deleteEvent,
   rsvpToEvent,
+  approveOrRejectRSVP,
+  getPendingRSVPs,
   addOrUpdateFeedback,
   getFeedbackForEvent,
   generateCheckinQRCode,

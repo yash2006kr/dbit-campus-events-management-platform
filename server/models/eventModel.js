@@ -29,6 +29,13 @@ const eventSchema = mongoose.Schema(
         ref: 'User', // This links to our User model
       },
     ],
+    // Pending RSVPs awaiting admin approval
+    pendingRsvps: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+      },
+    ],
     // Attendance tracking
     attendees: [
       {

@@ -63,13 +63,13 @@
   box-shadow: 0 0 20px var(--color-accent);
 }
 
-/* Dark blue neon glow colors */
+/* Event-themed neon glow colors */
 :root {
-  --color-primary: #1e3a8a; /* Dark blue */
-  --color-accent: #2563eb; /* Bright blue */
-  --color-surface: #0f172a; /* Very dark blue */
-  --color-text: #e0e7ff; /* Light blue text */
-  --glow-color: #2563eb; /* Neon blue glow */
+  --color-primary: #8b5cf6; /* Vibrant purple */
+  --color-accent: #fbbf24; /* Yellow */
+  --color-surface: #2d1b3d; /* Lighter purple surface */
+  --color-text: #fefefe; /* White */
+  --glow-color: rgba(139, 92, 246, 0.5); /* Purple glow */
 }
 
 @keyframes glowing {

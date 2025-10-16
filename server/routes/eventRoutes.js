@@ -6,6 +6,8 @@ const {
   updateEvent,
   deleteEvent,
   rsvpToEvent,
+  approveOrRejectRSVP,
+  getPendingRSVPs,
   addOrUpdateFeedback,
   getFeedbackForEvent,
   generateCheckinQRCode,
@@ -20,12 +22,14 @@ router.route('/:id').put(protect, adminOnly, updateEvent).delete(protect, adminO
 
 // RSVP route
 router.route('/:id/rsvp').post(protect, rsvpToEvent);
+router.route('/:id/rsvp/:userId/approve').post(protect, adminOnly, approveOrRejectRSVP);
+router.route('/:id/pending-rsvps').get(protect, adminOnly, getPendingRSVPs);
 
 // Feedback routes
 router.route('/:eventId/feedback').post(protect, addOrUpdateFeedback).get(getFeedbackForEvent);
 
 // QR Code routes
-router.route('/:id/qr').get(protect, adminOnly, generateCheckinQRCode);
+router.route('/:id/qr').get(protect, generateCheckinQRCode);
 router.route('/:id/checkin').post(protect, checkinUser);
 
 // Calendar routes

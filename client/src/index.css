@@ -11,27 +11,27 @@
 
 @keyframes glowing {
   0% {
-    box-shadow: 0 0 5px #ff6f00, 0 0 10px #ff6f00, 0 0 20px #ff6f00, 0 0 40px #ff6f00;
+    box-shadow: 0 0 5px var(--glow-color), 0 0 10px var(--glow-color), 0 0 20px var(--glow-color), 0 0 40px var(--glow-color);
   }
   50% {
-    box-shadow: 0 0 20px #ff6f00, 0 0 30px #ff6f00, 0 0 40px #ff6f00, 0 0 60px #ff6f00;
+    box-shadow: 0 0 20px var(--glow-color), 0 0 30px var(--glow-color), 0 0 40px var(--glow-color), 0 0 60px var(--glow-color);
   }
   100% {
-    box-shadow: 0 0 5px #ff6f00, 0 0 10px #ff6f00, 0 0 20px #ff6f00, 0 0 40px #ff6f00;
+    box-shadow: 0 0 5px var(--glow-color), 0 0 10px var(--glow-color), 0 0 20px var(--glow-color), 0 0 40px var(--glow-color);
   }
 }
 
 :root {
-  /* Define our color palette */
+  /* Define our event-themed color palette */
   --font-family: 'Poppins', sans-serif;
-  --color-background: #0D0C1D; /* Deep space blue */
-  --color-surface: #161A30;    /* Slightly lighter surface */
-  --color-primary: #1e3a8a;    /* Dark blue */
-  --color-secondary: #2563eb;  /* Bright blue */
-  --color-accent: #3b82f6;     /* Lighter blue */
-  --color-text: #e0e7ff;       /* Light blue text */
-  --color-text-muted: #94a3b8; /* Muted blue-gray */
-  --glow-color: rgba(37, 99, 235, 0.5); /* Neon blue glow */
+  --color-background: #1a0a1e; /* Deep purple */
+  --color-surface: #2d1b3d;    /* Lighter purple surface */
+  --color-primary: #8b5cf6;    /* Vibrant purple */
+  --color-secondary: #ec4899;  /* Pink */
+  --color-accent: #fbbf24;     /* Yellow */
+  --color-text: #fefefe;       /* White */
+  --color-text-muted: #a78bfa; /* Light purple */
+  --glow-color: rgba(139, 92, 246, 0.5); /* Purple glow */
 }
 
 * {
@@ -44,8 +44,8 @@ body {
   background-color: var(--color-background);
   color: var(--color-text);
   font-weight: 300;
-  background-image: radial-gradient(circle at 25px 25px, rgba(255, 111, 0, 0.1) 2%, transparent 0%), radial-gradient(circle at 75px 75px, rgba(255, 111, 0, 0.1) 2%, transparent 0%);
-  background-size: 100px 100px;
+  background-image: radial-gradient(circle at 25px 25px, rgba(139, 92, 246, 0.1) 2%, transparent 0%), radial-gradient(circle at 75px 75px, rgba(236, 72, 153, 0.1) 2%, transparent 0%), radial-gradient(circle at 125px 125px, rgba(251, 191, 36, 0.1) 2%, transparent 0%);
+  background-size: 150px 150px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
@@ -79,10 +79,10 @@ body::before {
   content: "";
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: linear-gradient(270deg, var(--color-primary), var(--color-secondary), var(--color-accent), var(--color-primary));
-  background-size: 600% 600%;
-  animation: backgroundShift 20s ease infinite;
-  opacity: 0.1;
+  background: linear-gradient(270deg, var(--color-primary), var(--color-secondary), var(--color-accent), #ef4444, var(--color-primary));
+  background-size: 800% 800%;
+  animation: backgroundShift 30s ease infinite;
+  opacity: 0.05;
   pointer-events: none;
   z-index: -1;
 }

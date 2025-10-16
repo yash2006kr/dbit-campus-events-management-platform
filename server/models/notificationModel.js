@@ -17,7 +17,7 @@ const notificationSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    enum: ['schedule_change', 'rsvp_update'],
+    enum: ['schedule_change', 'rsvp_update', 'rsvp_approved', 'rsvp_rejected', 'rsvp_request'],
     required: true,
   },
   read: {

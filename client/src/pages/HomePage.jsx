@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
-import { FaMapMarkerAlt, FaCalendarAlt, FaUsers } from 'react-icons/fa';
+import { FaMapMarkerAlt, FaCalendarAlt, FaUsers, FaQrcode, FaClock } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axiosInstance';
 
@@ -11,6 +11,8 @@ import Spinner from '../components/Spinner.jsx';
 import EmptyState from '../components/EmptyState.jsx';
 import CalendarExport from '../components/CalendarExport.jsx';
 import CalendarImport from '../components/CalendarImport.jsx';
+import QRCodeDisplay from '../components/QRCodeDisplay.jsx';
+import AdminEventRSVPManagement from '../components/AdminEventRSVPManagement.jsx';
 
 const HomePage = () => {
   const { user } = useAuth();
@@ -19,6 +21,9 @@ const HomePage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentEvent, setCurrentEvent] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [qrCodeImageUrl, setQrCodeImageUrl] = useState(null);
+  const [showQRCode, setShowQRCode] = useState(null);
+  const [showRSVPModal, setShowRSVPModal] = useState(null);
 
   const fetchEvents = async (query = '') => {
     try {
@@ -81,6 +86,31 @@ const HomePage = () => {
     }
   };
 
+  // Handle QR Code generation for admins
+  const handleGenerateQR = async (eventId) => {
+    try {
+      const response = await api.get(`/events/${eventId}/qr`);
+      setQrCodeImageUrl(response.data.qrCode);
+      setShowQRCode(eventId);
+    } catch (error) {
+      toast.error('Failed to generate QR code');
+    }
+  };
+
+  // Handle RSVP management modal for admins
+  const handleManageRSVP = (eventId) => {
+    setShowRSVPModal(eventId);
+  };
+
+  const closeQRCode = () => {
+    setShowQRCode(null);
+    setQrCodeImageUrl(null);
+  };
+
+  const closeRSVPModal = () => {
+    setShowRSVPModal(null);
+  };
+
   return (
     <div className="event-list-container">
       {user && user.role === 'admin' && <AddEventForm onEventAdded={fetchEvents} />}
@@ -114,13 +144,38 @@ const HomePage = () => {
                     <div className="event-footer">
                       <div className="rsvp-count">
                         <FaUsers /> {event.rsvps.length} going
+                        {user && user.role === 'admin' && event.pendingRsvps && event.pendingRsvps.length > 0 && (
+                          <span className="pending-count">
+                            <FaClock /> {event.pendingRsvps.length} pending
+                          </span>
+                        )}
                       </div>
                       {user && user.role === 'student' && (
-                        <button onClick={() => handleRsvp(event._id)} className={`btn-rsvp ${isRsvpd ? 'registered' : ''}`}>
-                          {isRsvpd ? 'Cancel RSVP' : 'RSVP Now'}
-                        </button>
+                        <div className="student-buttons">
+                          <button onClick={() => handleRsvp(event._id)} className={`btn-rsvp ${isRsvpd ? 'registered' : ''}`}>
+                            {isRsvpd ? 'Cancel RSVP' : 'RSVP Now'}
+                          </button>
+                          {isRsvpd && (
+                            <>
+                              <button onClick={() => handleGenerateQR(event._id)} className="btn-qr">
+                                <FaQrcode /> QR Code
+                              </button>
+                              <CalendarExport eventId={event._id} />
+                            </>
+                          )}
+                        </div>
                       )}
-                      <CalendarExport eventId={event._id} />
+                      {user && user.role === 'admin' && (
+                        <div className="admin-buttons">
+                          <button onClick={() => handleGenerateQR(event._id)} className="btn-qr">
+                            <FaQrcode /> QR Code
+                          </button>
+                          <button onClick={() => handleManageRSVP(event._id)} className="btn-manage-rsvp">
+                            <FaClock /> Manage RSVPs
+                          </button>
+                          <CalendarExport eventId={event._id} />
+                        </div>
+                      )}
                     </div>
                   </div>
                 );
@@ -135,6 +190,21 @@ const HomePage = () => {
           event={currentEvent}
           onClose={handleCloseEditModal}
           onEventUpdated={handleEventUpdated}
+        />
+      )}
+
+      {showQRCode && qrCodeImageUrl && (
+        <QRCodeDisplay
+          qrCodeUrl={qrCodeImageUrl}
+          eventId={showQRCode}
+          onClose={closeQRCode}
+        />
+      )}
+
+      {showRSVPModal && (
+        <AdminEventRSVPManagement
+          eventId={showRSVPModal}
+          onClose={closeRSVPModal}
         />
       )}
     </div>

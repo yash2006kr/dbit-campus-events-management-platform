@@ -18,7 +18,15 @@ const CalendarExport = ({ eventId }) => {
     }
   };
 
-  return <button className="calendar-export-btn" onClick={handleExport}>Export to Calendar</button>;
+  return (
+    <button
+      className="calendar-export-btn"
+      onClick={handleExport}
+      title="Download .ics file to add this event to your calendar (Google Calendar, Outlook, etc.)"
+    >
+      Export to Calendar
+    </button>
+  );
 };
 
 export default CalendarExport;

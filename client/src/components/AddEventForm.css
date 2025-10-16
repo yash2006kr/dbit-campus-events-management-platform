@@ -19,20 +19,21 @@
   margin-bottom: 0;
 }
 .add-event-form {
-  background: rgba(43, 43, 43, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--color-surface);
+  border: 1px solid rgba(139, 92, 246, 0.3);
   border-radius: 10px;
   padding: 2rem;
   margin-bottom: 3rem;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 0 10px var(--glow-color);
 }
 
 .add-event-form h3 {
   margin-top: 0;
   text-align: left;
   font-size: 1.5rem;
-  color: #f0f0f0;
+  color: var(--color-text);
 }
 
 .add-event-form input,
@@ -40,12 +41,21 @@
   width: 100%;
   padding: 0.8rem 1rem;
   margin-bottom: 1rem;
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: transparent;
+  border: 1px solid var(--color-primary);
   border-radius: 5px;
-  color: #f0f0f0;
+  color: var(--color-text);
   font-size: 1rem;
   box-sizing: border-box; /* Important for padding and width */
+  box-shadow: 0 0 5px var(--glow-color);
+  transition: box-shadow 0.3s ease;
+}
+
+.add-event-form input:focus,
+.add-event-form textarea:focus {
+  outline: none;
+  box-shadow: 0 0 15px var(--glow-color);
+  border-color: var(--color-accent);
 }
 
 .add-event-form textarea {
@@ -61,7 +71,7 @@
 .add-event-form button {
   width: 100%;
   padding: 1rem;
-  background-color: #a672ff;
+  background-color: var(--color-primary);
   color: #fff;
   border: none;
   border-radius: 5px;
@@ -69,8 +79,10 @@
   font-weight: bold;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  box-shadow: 0 0 10px var(--glow-color);
 }
 
 .add-event-form button:hover {
-  background-color: #8a4fff;
+  background-color: var(--color-secondary);
+  box-shadow: 0 0 20px var(--glow-color);
 }
