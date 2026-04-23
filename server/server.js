@@ -20,6 +20,8 @@ const startServer = async () => {
   // API Routes
   app.use('/api/events', require('./routes/eventRoutes'));
   app.use('/api/users', require('./routes/userRoutes'));
+  app.use('/api/admin', require('./routes/adminRoutes'));
+  app.use('/api/notifications', require('./routes/notificationRoutes'));
 
   const server = http.createServer(app);
   const io = socketIo(server, {

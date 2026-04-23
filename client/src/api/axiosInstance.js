@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:5001/api',
+  baseURL: 'http://localhost:5000/api',
 });
 
 // This is an interceptor. It runs BEFORE each request is sent.
