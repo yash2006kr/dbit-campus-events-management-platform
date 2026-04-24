@@ -116,20 +116,20 @@
 }
 
 .user-type-btn.active {
-  background: linear-gradient(135deg, #ff6f00, #ff8f00);
+  background: linear-gradient(135deg, #8b5cf6, #a78bfa);
   color: white;
-  box-shadow: 0 4px 12px rgba(255, 111, 0, 0.3);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
 }
 
 .user-type-btn:hover:not(.active) {
-  background: rgba(255, 111, 0, 0.1);
-  color: #ff6f00;
+  background: rgba(139, 92, 246, 0.1);
+  color: #8b5cf6;
 }
 
 .auth-submit-btn {
   width: 100%;
   padding: 1rem;
-  background: linear-gradient(135deg, #ff6f00, #ff8f00);
+  background: linear-gradient(135deg, #8b5cf6, #a78bfa);
   color: white;
   border: none;
   border-radius: 12px;
@@ -137,14 +137,14 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(255, 111, 0, 0.3);
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
   text-transform: uppercase;
   letter-spacing: 1px;
 }
 
 .auth-submit-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(255, 111, 0, 0.4);
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
 }
 
 .auth-submit-btn:active {

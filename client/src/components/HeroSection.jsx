@@ -43,10 +43,10 @@ const HeroSection = () => {
         </div>
         <div className="hero-image">
           <SafeImage 
-            src="https://picsum.photos/seed/campusevent/400/300.jpg" 
+            src="https://picsum.photos/seed/campus-students-events/400/300.jpg" 
             alt="Campus Event" 
             className="hero-img"
-            fallbackSrc="https://via.placeholder.com/400x300/ff6f00/ffffff?text=Campus+Event"
+            fallbackSrc="https://via.placeholder.com/400x300/ff6f00/ffffff?text=Campus+Events"
           />
         </div>
       </div>

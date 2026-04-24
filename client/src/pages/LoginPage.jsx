@@ -59,10 +59,10 @@ const LoginPage = () => {
         <div className="auth-card">
           <div className="auth-header">
             <SafeImage 
-              src="https://picsum.photos/seed/dbitlogo/200/200.jpg" 
+              src="https://picsum.photos/seed/campus-concert-stage/200/200.jpg" 
               alt="DBIT Campus Events" 
               className="auth-logo"
-              fallbackSrc="https://via.placeholder.com/200x200/ff6f00/ffffff?text=DBIT"
+              fallbackSrc="https://via.placeholder.com/200x200/8b5cf6/ffffff?text=DBIT+Events"
             />
             <h1>Welcome Back</h1>
             <p>Sign in to access your campus events</p>

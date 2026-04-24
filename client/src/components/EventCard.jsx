@@ -17,12 +17,12 @@ const EventCard = ({
   // Get realistic event images based on event type
   const getEventImage = (eventName, organizer) => {
     const imageMap = {
-      'tech': 'https://picsum.photos/seed/techevent/800/600.jpg',
-      'cultural': 'https://picsum.photos/seed/culturalevent/800/600.jpg',
-      'hackathon': 'https://picsum.photos/seed/hackathon/800/600.jpg',
-      'career': 'https://picsum.photos/seed/careerfair/800/600.jpg',
-      'workshop': 'https://picsum.photos/seed/workshop/800/600.jpg',
-      'concert': 'https://picsum.photos/seed/concert/800/600.jpg'
+      'tech': 'https://picsum.photos/seed/campus-tech-seminar/800/600.jpg',
+      'cultural': 'https://picsum.photos/seed/campus-cultural-fest/800/600.jpg',
+      'hackathon': 'https://picsum.photos/seed/campus-coding-hackathon/800/600.jpg',
+      'career': 'https://picsum.photos/seed/campus-career-fair/800/600.jpg',
+      'workshop': 'https://picsum.photos/seed/campus-ai-workshop/800/600.jpg',
+      'concert': 'https://picsum.photos/seed/campus-music-concert/800/600.jpg'
     };
 
     const lowerName = eventName.toLowerCase();
