@@ -5,7 +5,10 @@ import { toast } from 'react-toastify';
 import { useAuth } from '../context/AuthContext';
 import authService from '../features/auth/authService';
 import adminService from '../features/auth/adminService';
-import './Auth.css'; // We'll reuse the same CSS from the register page
+import AuthBackground from '../components/AuthBackground.jsx';
+import SafeImage from '../components/SafeImage.jsx';
+import '../components/AuthBackground.css';
+import './AuthEnhanced.css'; // Import enhanced auth CSS for the login page
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -50,27 +53,86 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="auth-container">
-      <h1>Account Login</h1>
-      <form onSubmit={onSubmit} className="add-event-form">
-        <div className="form-group">
-          <label htmlFor="userType">Login As</label>
-          <select id="userType" name="userType" value={userType} onChange={onChange}>
-            <option value="student">Student</option>
-            <option value="admin">Admin</option>
-          </select>
+    <>
+      <AuthBackground />
+      <div className="auth-container-enhanced">
+        <div className="auth-card">
+          <div className="auth-header">
+            <SafeImage 
+              src="https://picsum.photos/seed/dbitlogo/200/200.jpg" 
+              alt="DBIT Campus Events" 
+              className="auth-logo"
+              fallbackSrc="https://via.placeholder.com/200x200/ff6f00/ffffff?text=DBIT"
+            />
+            <h1>Welcome Back</h1>
+            <p>Sign in to access your campus events</p>
+          </div>
+          
+          <form onSubmit={onSubmit} className="auth-form">
+            <div className="form-group-enhanced">
+              <label htmlFor="userType">Login As</label>
+              <div className="user-type-selector">
+                <button 
+                  type="button" 
+                  className={`user-type-btn ${userType === 'student' ? 'active' : ''}`}
+                  onClick={() => setUserType('student')}
+                >
+                  Student
+                </button>
+                <button 
+                  type="button" 
+                  className={`user-type-btn ${userType === 'admin' ? 'active' : ''}`}
+                  onClick={() => setUserType('admin')}
+                >
+                  Admin
+                </button>
+              </div>
+            </div>
+            
+            <div className="form-group-enhanced">
+              <label htmlFor="email">Email Address</label>
+              <input 
+                type="email" 
+                id="email" 
+                name="email" 
+                value={email} 
+                onChange={onChange} 
+                required 
+                placeholder="Enter your email"
+              />
+            </div>
+            
+            <div className="form-group-enhanced">
+              <label htmlFor="password">Password</label>
+              <input 
+                type="password" 
+                id="password" 
+                name="password" 
+                value={password} 
+                onChange={onChange} 
+                required 
+                placeholder="Enter your password"
+              />
+            </div>
+            
+            <button type="submit" className="auth-submit-btn">
+              {userType === 'admin' ? 'Admin Login' : 'Student Login'}
+            </button>
+          </form>
+          
+          <div className="auth-footer">
+            <p>Don't have an account? <a href="/register">Sign up</a></p>
+            <p>
+              {userType === 'admin' ? (
+                <>Test: admin@dbit.edu / admin123</>
+              ) : (
+                <>Test: john.doe@dbit.edu / student123</>
+              )}
+            </p>
+          </div>
         </div>
-        <div className="form-group">
-          <label htmlFor="email">Email</label>
-          <input type="email" id="email" name="email" value={email} onChange={onChange} required />
-        </div>
-        <div className="form-group">
-          <label htmlFor="password">Password</label>
-          <input type="password" id="password" name="password" value={password} onChange={onChange} required />
-        </div>
-        <button type="submit">Login</button>
-      </form>
-    </div>
+      </div>
+    </>
   );
 };
 

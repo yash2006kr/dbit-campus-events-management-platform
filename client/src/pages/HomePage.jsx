@@ -13,6 +13,10 @@ import CalendarExport from '../components/CalendarExport.jsx';
 import CalendarImport from '../components/CalendarImport.jsx';
 import QRCodeDisplay from '../components/QRCodeDisplay.jsx';
 import AdminEventRSVPManagement from '../components/AdminEventRSVPManagement.jsx';
+import HeroSection from '../components/HeroSection.jsx';
+import '../components/HeroSection.css';
+import EventCard from '../components/EventCard.jsx';
+import '../components/EventCard.css';
 
 const HomePage = () => {
   const { user } = useAuth();
@@ -112,101 +116,63 @@ const HomePage = () => {
   };
 
   return (
-    <div className="event-list-container">
-      {user && user.role === 'admin' && <AddEventForm onEventAdded={fetchEvents} />}
+    <div className="home-page">
+      <HeroSection />
+      
+      <div className="events-section">
+        <div className="events-header">
+          <h1>Upcoming Campus Events</h1>
+          <SearchBar onSearch={handleSearch} />
+          {user && user.role === 'admin' && <CalendarImport />}
+        </div>
 
-      <h1>Upcoming Campus Events</h1>
-      <SearchBar onSearch={handleSearch} />
-      {user && user.role === 'admin' && <CalendarImport />}
-      {isLoading ? ( <Spinner /> ) : (
-        <>
-          {events.length > 0 ? (
-            <div className="events-grid">
-              {events.map((event) => {
-                const isRsvpd = user && event.rsvps.includes(user._id);
-                return (
-                  <div key={event._id} className="event-card">
-                    {user && user.role === 'admin' && (
-                      <div className="card-buttons">
-                        <button onClick={() => handleOpenEditModal(event)} className="edit-btn">Edit</button>
-                        <button onClick={() => handleDelete(event._id)} className="delete-btn">&times;</button>
-                      </div>
-                    )}
-                    <h2>{event.name}</h2>
-                    <p className="event-organizer">By: {event.organizer}</p>
-                    <p>{event.description}</p>
-                    <div className="event-details">
-                      <span><FaMapMarkerAlt /> {event.venue}</span>
-                      <span><FaCalendarAlt /> {new Date(event.date).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}</span>
-                    </div>
+        {user && user.role === 'admin' && <AddEventForm onEventAdded={fetchEvents} />}
+        
+        {isLoading ? ( <Spinner /> ) : (
+          <>
+            {events.length > 0 ? (
+              <div className="events-grid-enhanced">
+                {events.map((event) => (
+                  <EventCard
+                    key={event._id}
+                    event={event}
+                    user={user}
+                    onRSVP={handleRsvp}
+                    onDelete={handleDelete}
+                    onEdit={handleOpenEditModal}
+                    onGenerateQR={handleGenerateQR}
+                    onManageRSVP={handleManageRSVP}
+                    onCalendarExport={CalendarExport}
+                  />
+                ))}
+              </div>
+            ) : ( <EmptyState /> )}
+          </>
+        )}
 
-                    {/* --- NEW RSVP SECTION --- */}
-                    <div className="event-footer">
-                      <div className="rsvp-count">
-                        <FaUsers /> {event.rsvps.length} going
-                        {user && user.role === 'admin' && event.pendingRsvps && event.pendingRsvps.length > 0 && (
-                          <span className="pending-count">
-                            <FaClock /> {event.pendingRsvps.length} pending
-                          </span>
-                        )}
-                      </div>
-                      {user && user.role === 'student' && (
-                        <div className="student-buttons">
-                          <button onClick={() => handleRsvp(event._id)} className={`btn-rsvp ${isRsvpd ? 'registered' : ''}`}>
-                            {isRsvpd ? 'Cancel RSVP' : 'RSVP Now'}
-                          </button>
-                          {isRsvpd && (
-                            <>
-                              <button onClick={() => handleGenerateQR(event._id)} className="btn-qr">
-                                <FaQrcode /> QR Code
-                              </button>
-                              <CalendarExport eventId={event._id} />
-                            </>
-                          )}
-                        </div>
-                      )}
-                      {user && user.role === 'admin' && (
-                        <div className="admin-buttons">
-                          <button onClick={() => handleGenerateQR(event._id)} className="btn-qr">
-                            <FaQrcode /> QR Code
-                          </button>
-                          <button onClick={() => handleManageRSVP(event._id)} className="btn-manage-rsvp">
-                            <FaClock /> Manage RSVPs
-                          </button>
-                          <CalendarExport eventId={event._id} />
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          ) : ( <EmptyState /> )}
-        </>
-      )}
+        {isModalOpen && (
+          <EditEventModal
+            event={currentEvent}
+            onClose={handleCloseEditModal}
+            onEventUpdated={handleEventUpdated}
+          />
+        )}
 
-      {isModalOpen && (
-        <EditEventModal
-          event={currentEvent}
-          onClose={handleCloseEditModal}
-          onEventUpdated={handleEventUpdated}
-        />
-      )}
+        {showQRCode && qrCodeImageUrl && (
+          <QRCodeDisplay
+            qrCodeUrl={qrCodeImageUrl}
+            eventId={showQRCode}
+            onClose={closeQRCode}
+          />
+        )}
 
-      {showQRCode && qrCodeImageUrl && (
-        <QRCodeDisplay
-          qrCodeUrl={qrCodeImageUrl}
-          eventId={showQRCode}
-          onClose={closeQRCode}
-        />
-      )}
-
-      {showRSVPModal && (
-        <AdminEventRSVPManagement
-          eventId={showRSVPModal}
-          onClose={closeRSVPModal}
-        />
-      )}
+        {showRSVPModal && (
+          <AdminEventRSVPManagement
+            eventId={showRSVPModal}
+            onClose={closeRSVPModal}
+          />
+        )}
+      </div>
     </div>
   );
 };
